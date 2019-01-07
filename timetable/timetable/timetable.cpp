@@ -3,14 +3,19 @@
 
 #include "pch.h"
 #include <iostream>
-#include <Windows.h>
-#include <Mmsystem.h>
 #include <string.h>
 #include <chrono>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <thread>         // std::this_thread::sleep_for
+#include <chrono>         // std::chrono::seconds
+
+#ifdef _WIN32
+#include <Windows.h>
+#include <Mmsystem.h>
+#endif
 
 #pragma comment(lib, "Winmm.lib")
 
@@ -96,7 +101,6 @@ int main()
 		int option = 0;
 		do {
 			cin.clear();
-			cin.ignore(10000, '\n');
 			cin >> option;
 		} while (option != 1);
 
@@ -111,8 +115,14 @@ int main()
 			steady_clock::time_point current = steady_clock::now();
 			if (current == end)
 				break;
+			std::this_thread::sleep_for (std::chrono::seconds(1));
+			cout << "Seconds elapsed: " << (current-start).count()/1000000000 << '\r' << flush;
 		}
+#ifdef _WIN32
+		// Can't play sounds on linux
+		// also, this should use a relative path
 		PlaySound(TEXT("C:\\Users\\siong\\source\\repos\\timetable\\timetable\\times_up.wav"), NULL, SND_FILENAME);
+#endif
 
 	}
 
