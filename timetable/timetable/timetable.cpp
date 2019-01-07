@@ -2,6 +2,7 @@
 //
 
 #include "pch.h"
+#include <ctime>
 #include <iostream>
 #include <string.h>
 #include <chrono>
@@ -45,9 +46,9 @@ using namespace chrono;
 int main()
 {
 	auto timenow =
-		chrono::system_clock::to_time_t(chrono::system_clock::now());
+		system_clock::to_time_t(system_clock::now());
 
-	cout << ctime(&timenow) << endl;
+	//cout << ctime(&timenow) << endl;
 
 	//getting individual topic and its duration
 	string topic = "nill";
@@ -99,10 +100,14 @@ int main()
 		cout << "Duration : " << topicDurations[topics] << "min" << endl;
 		cout << "press 1 to start.";
 		int option = 0;
-		do {
-			cin.clear();
+		for (;;) {
 			cin >> option;
-		} while (option != 1);
+			if (option == 1)
+				break;
+			cout << "invalid input\n";
+			cin.clear();
+			cin.ignore(10000, '\n');
+		}
 
 
 		cin.clear();
@@ -111,24 +116,24 @@ int main()
 		//timer
 		steady_clock::time_point start = steady_clock::now();
 		steady_clock::time_point end = start + minutes(duration);
+
 		for (;;) {
 			steady_clock::time_point current = steady_clock::now();
-			if (current == end)
+			if (current >= end)
 				break;
-			std::this_thread::sleep_for (std::chrono::seconds(1));
-			cout << "Seconds elapsed: " << (current-start).count()/1000000000 << '\r' << flush;
+			this_thread::sleep_for(milliseconds(256));
+			cout << "Seconds elapsed: " << (current - start).count() / 1000000000 << '\r' << flush;
 		}
-#ifdef _WIN32
+
 		// Can't play sounds on linux
 		// also, this should use a relative path
-		PlaySound(TEXT("C:\\Users\\siong\\source\\repos\\timetable\\timetable\\times_up.wav"), NULL, SND_FILENAME);
-#endif
+		PlaySound(TEXT("times_up.wav"), NULL, SND_FILENAME);
 
 	}
 
 	cout << "congratulations, you have finished your entire schedule. :)";
 
-	cout << ctime(&timenow) << endl;
+	//cout << ctime(&timenow) << endl;
 
 	cout << endl;
 }
